@@ -1,9 +1,14 @@
 # Default bundle configuration for the `sessionManager` Cordis service.
 # A later patch with the same id replaces this entire config object.
+# Field meanings, defaults and units are documented in README.md.
 - insert:
     - id: sessionManager
       name: 'dsh-session-manager'
       config:
+        # Root directory for DSH session archives. ~ expands against the
+        # Host process's HOME; on most systems this is ~/.dsh/sessions.
         sessionsRoot: '~/.dsh/sessions'
+        # Hard cap on export payload size in bytes (10 MiB).
         maxExportBytes: 10485760
+        # Maximum number of messages returned per readHistory call.
         previewMessageLimit: 200
