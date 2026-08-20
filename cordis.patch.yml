@@ -1,0 +1,9 @@
+# Default bundle configuration for the `sessionManager` Cordis service.
+# A later patch with the same id replaces this entire config object.
+- insert:
+    - id: sessionManager
+      name: 'dsh-session-manager'
+      config:
+        sessionsRoot: '~/.dsh/sessions'
+        maxExportBytes: 10485760
+        previewMessageLimit: 200
