@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/huajuan2024/dsh-session-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/huajuan2024/dsh-session-manager/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin)
+[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/huajuan2024/dsh-session-manager)
 
 DeepSeek Harness (DSH) 插件:在 Web UI 的「设置 → 插件」里提供一个会话管理面板,
 支持**查看历史消息、删除会话、导出单条会话**(JSON 或 Markdown)。
