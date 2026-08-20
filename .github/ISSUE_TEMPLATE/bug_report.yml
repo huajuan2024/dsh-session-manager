@@ -1,0 +1,25 @@
+name: Bug report
+description: Report a bug in dsh-session-manager
+labels: [bug]
+body:
+  - id: summary
+    title: What happened?
+    attributes:
+      required: true
+  - id: repro
+    title: Steps to reproduce
+    attributes:
+      required: true
+  - id: expected
+    title: What did you expect?
+    attributes:
+      required: true
+  - id: env
+    title: Environment
+    attributes:
+      required: false
+      value: |
+        - Plugin version:
+        - DSH version:
+        - Node.js version:
+        - OS:
