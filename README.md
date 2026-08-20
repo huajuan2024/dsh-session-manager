@@ -1,5 +1,9 @@
 # dsh-session-manager
 
+[![CI](https://github.com/huajuan2024/dsh-session-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/huajuan2024/dsh-session-manager/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin)
+
 DeepSeek Harness (DSH) 插件:在 Web UI 的「设置 → 插件」里提供一个会话管理面板,
 支持**查看历史消息、删除会话、导出单条会话**(JSON 或 Markdown)。
 
@@ -12,6 +16,13 @@ DeepSeek Harness (DSH) 插件:在 Web UI 的「设置 → 插件」里提供一�
   `settings.plugins.tab` slot,在「设置 → 插件」里渲染会话列表与详情面板。
 - `src/types.ts`:Host 对浏览器公开的白名单 DTO。
 - `lib/`:由 TypeScript 生成的发布产物,不要手工修改。
+
+## 安全模型
+
+- 本插件**不向模型请求注入内容**,因此不会新增 session event。
+- 文件操作只发生在 Host 进程,token 或文件绝对路径不会进入 Remote 返回值。
+- `sessionId` 必须匹配 `session-<uuid>` 正则,否则请求被拒绝。
+- 正在运行的会话(`running` 状态)不可删除,需要先结束会话。
 
 本插件**不向模型请求注入内容**,因此不会新增 session event。文件操作只发生在
 Host 进程,token 或文件绝对路径不会进入 Remote 返回值。
