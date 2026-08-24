@@ -5,7 +5,7 @@ export type SessionManagerErrorCode =
 'session-running'
 /** The requested session id is unknown to the Host. */
  | 'not-found'
-/** sessionId did not match the expected `session-<uuid>` shape. */
+/** sessionId was neither a UUID (case-insensitive) nor a `session-` prefixed one. */
  | 'invalid-session-id'
 /** Host cannot read or delete the on-disk session directory. */
  | 'permission-denied'

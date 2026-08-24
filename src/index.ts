@@ -14,7 +14,11 @@ import type {
   SessionManagerSessionSummary,
 } from './types.js'
 
-const SESSION_ID_PATTERN = /^session-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+// Root sessions historically use `session-<uuid>`, while newer DSH subagent
+// sessions use the bare UUID. Keep this allowlist deliberately narrower than
+// arbitrary session ids because the validated value is later used as a path
+// segment when locating a persisted session directory.
+const SESSION_ID_PATTERN = /^(?:session-)?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const DEFAULT_HISTORY_PAGE_SIZE = 200
 const SUMMARY_READ_CONCURRENCY = 4
 
@@ -39,7 +43,7 @@ function assertSessionId(value: unknown): string {
   if (typeof value !== 'string' || !SESSION_ID_PATTERN.test(value)) {
     throw new PublicSessionError(
       'invalid-session-id',
-      'sessionId must match session-<uuid>.',
+      'sessionId must be a UUID, optionally prefixed with session-.',
     )
   }
   return value

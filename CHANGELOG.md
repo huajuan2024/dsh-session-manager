@@ -5,6 +5,14 @@ All notable changes to `dsh-session-manager` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2025-08-24
+
+### Changed
+- `readHistory`, `delete`, and `export` now accept both legacy `session-<uuid>`
+  ids and the bare UUIDs that newer DSH subagent sessions use.
+- `SESSION_ID_PATTERN` is anchored at start and end, so values like
+  `../<uuid>` or `<uuid>/child` continue to be rejected.
+
 ## [0.1.4] - 2025-08-20
 
 ### Added

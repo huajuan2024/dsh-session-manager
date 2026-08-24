@@ -1,6 +1,6 @@
 {
   "name": "dsh-session-manager",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "DSH plugin that lists, views, deletes, and exports DeepSeek Harness session histories.",
   "type": "module",
   "main": "lib/index.js",

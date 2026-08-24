@@ -1,8 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import os from 'node:os'
 import path from 'node:path'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { spawnSync } from 'node:child_process'
 import vm from 'node:vm'
 
@@ -67,6 +65,34 @@ test('exports the SessionManagerService default class', async () => {
   assert.deepEqual([...mod.default.inject], ['sessionQuery', 'agents'])
 })
 
+test('accepts root and subagent session id formats while rejecting unsafe ids', async () => {
+  const mod = await import(path.join(libRoot, 'index.js'))
+  const service = Object.create(mod.default.prototype)
+  service.config = { previewMessageLimit: 200 }
+  const accepted = []
+  service.readSession = async (sessionId) => {
+    accepted.push(sessionId)
+    return { session: { id: sessionId }, events: [] }
+  }
+
+  const rootId = 'session-f19e9a64-b997-446c-b20c-b35eba307c81'
+  const subagentId = 'ca16b22b-d3f8-4e84-8af4-53815fa1a99f'
+  await service.readHistory({ sessionId: rootId })
+  await service.readHistory({ sessionId: subagentId })
+  assert.deepEqual(accepted, [rootId, subagentId])
+
+  for (const sessionId of [
+    '../ca16b22b-d3f8-4e84-8af4-53815fa1a99f',
+    'session-not-a-uuid',
+    'ca16b22b-d3f8-4e84-8af4-53815fa1a99f/child',
+  ]) {
+    await assert.rejects(
+      service.readHistory({ sessionId }),
+      /sessionId must be a UUID, optionally prefixed with session-/,
+    )
+  }
+})
+
 test('host uses the rc.7 sessionQuery contract instead of the old sessions RPC envelope', async () => {
   const source = await readFile(path.join(libRoot, 'index.js'))
   assert.match(source, /sessionQuery\(\)\.listSessions\(\)/)
@@ -121,9 +147,3 @@ async function readFile(target) {
   const fs = await import('node:fs/promises')
   return fs.readFile(target, 'utf8')
 }
-
-// Keep the imports referenced so the test runner does not flag them.
-void os
-void mkdtemp
-void rm
-void writeFile

@@ -21,11 +21,9 @@ DeepSeek Harness (DSH) 插件:在 Web UI 的「设置 → 插件」里提供一�
 
 - 本插件**不向模型请求注入内容**,因此不会新增 session event。
 - 文件操作只发生在 Host 进程,token 或文件绝对路径不会进入 Remote 返回值。
-- `sessionId` 必须匹配 `session-<uuid>` 正则,否则请求被拒绝。
+- `sessionId` 必须是裸 UUID 或匹配 `session-<uuid>`,分别兼容新版子代理会话和
+  传统根会话；其它格式会被拒绝，避免路径穿越。
 - 正在运行的会话(`running` 状态)不可删除,需要先结束会话。
-
-本插件**不向模型请求注入内容**,因此不会新增 session event。文件操作只发生在
-Host 进程,token 或文件绝对路径不会进入 Remote 返回值。
 
 ## 功能
 
@@ -54,7 +52,7 @@ pnpm run test
 
 ```bash
 pnpm pack
-dsh plugin --profile web add ../../plugin-releases/dsh-session-manager-0.1.4.tgz
+dsh plugin --profile web add ../../plugin-releases/dsh-session-manager-0.1.5.tgz
 ```
 
 ## Profile 配置
@@ -103,7 +101,7 @@ dsh --profile web --dump-config
 
 - `session-running`:会话正在运行中,无法删除;请先结束该会话。
 - `not-found`:会话目录已不存在,可能已被其他进程清理。
-- `invalid-session-id`:sessionId 格式不符合 `session-<uuid>`,请求被拒绝。
+- `invalid-session-id`:sessionId 既不是裸 UUID,也不符合 `session-<uuid>`,请求被拒绝。
 - `permission-denied`:Host 进程没有删除或读取该目录的权限。
 - `upstream-error`:zstd 解压或 JSONL 解析失败,文件可能损坏。
 - `too-large`:会话存档超过 `maxExportBytes`,已拒绝导出。
