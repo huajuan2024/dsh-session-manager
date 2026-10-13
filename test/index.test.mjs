@@ -93,7 +93,7 @@ test('accepts root and subagent session id formats while rejecting unsafe ids', 
   }
 })
 
-test('host uses the rc.7 sessionQuery contract instead of the old sessions RPC envelope', async () => {
+test('host uses the 0.2 sessionQuery contract instead of the old sessions RPC envelope', async () => {
   const source = await readFile(path.join(libRoot, 'index.js'))
   assert.match(source, /sessionQuery\(\)\.listSessions\(\)/)
   assert.match(source, /sessionQuery\(\)\.readSession\(sessionId\)/)
@@ -124,7 +124,7 @@ test('re-exports the public DTO types from the host barrel', async () => {
 test('package.json declares the sessionManager patch id', async () => {
   const pkg = JSON.parse(await readFile(path.join(pkgRoot, 'package.json')))
   assert.equal(pkg.dsh.bundle.patch, './cordis.patch.yml')
-  assert.equal(pkg.peerDependencies['@deepseek-ai/dsh-session-query'], '^0.1.0-rc.7')
+  assert.equal(pkg.peerDependencies['@deepseek-ai/dsh-session-query'], '0.2.0-rc.2')
 })
 
 test('cordis.patch.yml inserts the sessionManager service', async () => {

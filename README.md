@@ -4,12 +4,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/huajuan2024/dsh-session-manager)
 
-DeepSeek Harness (DSH) 插件:在 Web UI 的「设置 → 插件」里提供一个会话管理面板,
+DeepSeek Harness (DSH) 插件:在 Desktop 与 Web UI 的「设置 → 插件」里提供一个会话管理面板,
 支持**查看历史消息、删除会话、导出单条会话**(JSON 或 Markdown)。
 
 ## 架构
 
-- `src/index.ts`:Cordis Host 服务 `ctx.sessionManager`,通过 rc.7 正式
+- `src/index.ts`:Cordis Host 服务 `ctx.sessionManager`,通过 `0.2.0-rc.2`
   `ctx.sessionQuery` 服务读取会话,负责删除、格式转换,以及 4 个 Remote API
   (list / readHistory / delete / export)。
 - `src/client.ts`:Web 客户端插件,通过标准 `/api` RPC 调用 Host,注册
@@ -22,7 +22,8 @@ DeepSeek Harness (DSH) 插件:在 Web UI 的「设置 → 插件」里提供一�
 - 本插件**不向模型请求注入内容**,因此不会新增 session event。
 - 文件操作只发生在 Host 进程,token 或文件绝对路径不会进入 Remote 返回值。
 - `sessionId` 必须是裸 UUID 或匹配 `session-<uuid>`,分别兼容新版子代理会话和
-  传统根会话；其它格式会被拒绝，避免路径穿越。
+  传统根会话。`SESSION_ID_PATTERN` 在 `^…$` 上锚定,因此 `../<uuid>` /
+  `<uuid>/child` 这类路径穿越尝试也会被拒绝。
 - 正在运行的会话(`running` 状态)不可删除,需要先结束会话。
 
 ## 功能
@@ -35,7 +36,7 @@ DeepSeek Harness (DSH) 插件:在 Web UI 的「设置 → 插件」里提供一�
 ## 前置要求
 
 - Node.js 22.19 或更高版本
-- DeepSeek Harness `0.1.0-rc.7` 兼容版本
+- DeepSeek Harness `0.2.0-rc.2`（Desktop 或 Web）
 
 ## 构建
 
@@ -52,13 +53,26 @@ pnpm run test
 
 ```bash
 pnpm pack
-dsh plugin --profile web add ../../plugin-releases/dsh-session-manager-0.1.5.tgz
+```
+
+随后把它装进任一 profile（Desktop 和 Web 装的是同一份 tarball——`cordis.patch.yml`
+的 `sessionManager` 条目是 profile 无关的）:
+
+```bash
+# 官方桌面版
+dsh plugin --profile desktop add ../../plugin-releases/dsh-session-manager-0.2.0.tgz
+
+# 浏览器 Web 版
+dsh plugin --profile web     add ../../plugin-releases/dsh-session-manager-0.2.0.tgz
 ```
 
 ## Profile 配置
 
-通过 `dsh plugin --profile web add` 安装 bundle 后,包内 `cordis.patch.yml` 提供默认
-配置。需要覆盖时,在 `~/.dsh/profiles/web/cordis.patch.yml` 中使用同一个 id:
+安装 bundle 后,包内 `cordis.patch.yml` 提供默认配置。需要覆盖时,在对应 profile
+的 home patch 里使用同一个 id:
+
+- Desktop: `~/.dsh/profiles/desktop/cordis.patch.yml`
+- Web: `~/.dsh/profiles/web/cordis.patch.yml`
 
 ```yaml
 - insert:
@@ -76,7 +90,8 @@ Harness 的后置 patch 会按 id 替换整份 config,因此覆盖时需要写�
 检查最终组合结果:
 
 ```bash
-dsh --profile web --dump-config
+dsh --profile desktop --dump-config
+dsh --profile web     --dump-config
 ```
 
 ## 配置项
@@ -89,13 +104,23 @@ dsh --profile web --dump-config
 
 ## 验证
 
-启动 Web profile 后检查:
+启动 profile（`desktop` 或 `web`）后检查:
 
 1. 「设置 → 插件」tab 中出现「会话管理」面板,列出所有会话。
 2. 点击行展开,显示消息历史(前 200 条)。
 3. 删除按钮在 running 会话上不可点击,其它会话二次确认后可删除。
 4. 导出 JSON / Markdown 触发浏览器下载,文件内容与本地 `session.jsonl.zstd`
    解码后内容一致。
+
+> Desktop 与 Web 走的是同一份 Host Remote API（`sessionManager/*`），面板的
+> 字段与行为完全一致；差异只在外壳 UI（设置 tab 的位置 / 主题）。
+
+## 兼容性
+
+- `dsh-session-manager@0.2.x` 要求宿主 `@deepseek-ai/*` 包为 `0.2.0-rc.2`
+  且 `@deepseek-ai/cordis@~4.0.4`。在 `0.1.0-rc.7` 宿主上的安装请继续用
+  `dsh-session-manager@0.1.5`——`ctx.sessionQuery` 契约和 Typert 接线在
+  `0.1.x → 0.2.x` 期间发生了变化,两条线不可互换。
 
 ## 故障排查
 

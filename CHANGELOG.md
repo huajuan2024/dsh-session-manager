@@ -5,6 +5,22 @@ All notable changes to `dsh-session-manager` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-10-13
+
+### Changed
+- Adapted to DeepSeek Harness `0.2.0-rc.2`: peer dependencies now pin
+  `0.2.0-rc.2` and the bundled `cordis.patch.yml` is profile-agnostic so the
+  same tarball installs under both the `desktop` and `web` profiles.
+- README: documented Desktop installation and configuration alongside the
+  existing Web path.
+
+### Compatibility
+- **Requires** `@deepseek-ai/*` packages at `0.2.0-rc.2` (and the matching
+  `@deepseek-ai/cordis@~4.0.4`). Installations still on `0.1.x` should keep
+  using `dsh-session-manager@0.1.5` — the `ctx.sessionQuery` contract and
+  `@Remote`/Typert wiring shifted between `0.1.0-rc.7` and `0.2.0-rc.2`, so
+  the two plugin lines are not interchangeable.
+
 ## [0.1.5] - 2025-08-24
 
 ### Changed
